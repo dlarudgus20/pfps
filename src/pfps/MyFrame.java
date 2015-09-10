@@ -13,10 +13,12 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.glu.GLU;
 
 public class MyFrame extends JFrame
 {
 	private static final long serialVersionUID = 7067036476639086788L;
+	private static final GLU glu = null;
 
 	public static void main(String[] args)
 	{
@@ -26,6 +28,10 @@ public class MyFrame extends JFrame
 		});
 	}
 
+	GLProfile glprof_;
+	GLCapabilities glcap_;
+	GLCanvas glcanvas_;
+
 	Camera camera_ = new Camera();
 	Light light_ = new Light();
 
@@ -33,24 +39,25 @@ public class MyFrame extends JFrame
 
 	public MyFrame()
 	{
+		glprof_ = GLProfile.getDefault();
+		glcap_ = new GLCapabilities(glprof_);
+
 		initUI();
 	}
 
 	private void initUI()
 	{
 		setTitle("pfps");
-		setSize(640, 480);
+		setSize(800, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		GLProfile glprof = GLProfile.getDefault();
-		GLCapabilities glcap = new GLCapabilities(glprof);
-		GLCanvas glcanvas = new GLCanvas(glcap);
-		glcanvas.addGLEventListener(new GLEventListener() {
+		glcanvas_ = new GLCanvas(glcap_);
+		glcanvas_.addGLEventListener(new GLEventListener() {
 			@Override
 			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 			{
-				setup(drawable.getGL().getGL2(), width, height);
+				MyFrame.this.reshape(drawable.getGL().getGL2(), width, height);
 			}
 			
 			@Override
@@ -66,7 +73,7 @@ public class MyFrame extends JFrame
 			@Override
 			public void display(GLAutoDrawable drawable)
 			{
-				render(drawable.getGL().getGL2(), drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+				MyFrame.this.display(drawable.getGL().getGL2(), drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
 			}
 		});
 
@@ -76,24 +83,37 @@ public class MyFrame extends JFrame
 				dispose();
 			}
 		});
+		
+		this.addKeyListener(input_);
 
-		this.getContentPane().add(glcanvas, BorderLayout.CENTER);
+		this.getContentPane().add(glcanvas_, BorderLayout.CENTER);
 	}
 
-	private void setup(GL2 gl2, int width, int height)
+	private void reshape(GL2 gl2, int width, int height)
 	{
+		GLU glu = GLU.createGLU();
+
+		gl2.glViewport(0, 0, width, height);
+
 		gl2.glMatrixMode(GL2.GL_PROJECTION);
 		gl2.glLoadIdentity();
-
+		glu.gluPerspective(60, width / height, 0.1f, 100);
+		
 		gl2.glMatrixMode(GL2.GL_MODELVIEW);
 		gl2.glLoadIdentity();
-		
-		gl2.glViewport(0, 0, width, height);
 	}
 
-	private void render(GL2 gl2, int width, int height)
+	private void display(GL2 gl2, int width, int height)
 	{
+		GLU glu = GLU.createGLU();
+
 		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl2.glEnable(GL2.GL_DEPTH_TEST);
+		
+		camera_.apply(gl2, glu);
+		//light_.apply(gl2);
+
+		gl2.glMatrixMode(GL2.GL_MODELVIEW);
 
 		gl2.glBegin(GL2.GL_TRIANGLES);
 		{
@@ -119,27 +139,16 @@ public class MyFrame extends JFrame
 			gl2.glVertex3f(0, 0, -0.75f);
 		}
 		gl2.glEnd();
-		/*graphics_.background(0);
-		
-		graphics_.hint(ENABLE_DEPTH_SORT);
 
-		// clear model&projection matrix with identify matrix
-		graphics_.resetMatrix();
-		graphics_.ortho(-1 + width/2, 1 + width/2, 1 + height/2, -1 + height/2, 1, -1);
-
-		camera_.apply(graphics_);
-		light_.apply(graphics_);
-
-		graphics_.ambient(255, 0, 0);
-		graphics_.specular(255, 0, 0);
-		graphics_.emissive(255, 0, 0);
-		graphics_.beginShape(TRIANGLES);
+		int direction = input_.getDirection();
+		if (direction != 0)
 		{
-			
+			float dx = ((direction & Input.LEFT) != 0 ? -1 : 0) + ((direction & Input.RIGHT) != 0 ? 1 : 0);
+			float dy = ((direction & Input.UP) != 0 ? -1 : 0) + ((direction & Input.DOWN) != 0 ? 1 : 0);
+			camera_.move(dx, dy, 0);
 		}
-		graphics_.endShape();
-
-		camera_.move(Input.getDirectionVector(input_.getDirection()));*/
+		
+		glcanvas_.invalidate();
 	}
 
 /*	private int smouseX_, smouseY_;

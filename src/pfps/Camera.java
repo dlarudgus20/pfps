@@ -1,40 +1,34 @@
 package pfps;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
+
 public class Camera
 {
-	/*// camera
-	private PVector eye_ = new PVector(0, 0, -100);
-	private PVector center_ = new PVector(0, 0, 0);
-	private PVector up_ = new PVector(0, -1, 0);
-
-	// projection
-	private float fovy_ = PConstants.PI / 4;
-	private float aspect_ = 1.5f;
-	private float near_ = -1200;
-	private float far_ = 100;
+	// camera
+	private float[] eye_ = { 0, 0, 10 };
+	private float[] center_ = { 0, 0, 0 };
+	private float[] up_ = { 0, 1, 0 };
 
 	public Camera()
 	{
 		// TODO 자동 생성된 생성자 스텁
 	}
 	
-	public void apply(PGraphics g)
+	public void apply(GL2 gl2, GLU glu)
 	{
-		g.camera(eye_.x, eye_.y, eye_.z,
-				center_.x, center_.y, center_.z,
-				up_.x, up_.y, up_.z);
-		g.perspective(fovy_, aspect_, near_, far_);
+		glu.gluLookAt(eye_[0], eye_[1], eye_[2],
+				center_[0], center_[1], center_[2],
+				up_[0], up_[1], up_[2]);
 	}
 
-	public void move(PVector dx)
+	public void move(float dx, float dy, float dz)
 	{
-		eye_.add(dx);
-		center_.add(dx);
-		near_ += dx.z;
-		far_ += dx.z;
+		eye_[0] += dx; eye_[1] += dy; eye_[2] += dz;
+		center_[0] += dx; center_[1] += dy; center_[2] += dz;
 	}
 
-	public void rotateX(float angle)
+	/*public void rotateX(float angle)
 	{
 		PVector axis = PVector.mult(up_, -1);
 
@@ -75,17 +69,10 @@ public class Camera
 		center_ = tmp;
 
 		up_ = mat.mult(up_, null);
-	}
-
-	public PVector getEye() { return eye_; }
-	public PVector getCenter() { return center_; }
-	public PVector getUp() { return up_; }
-
-	public void print(PApplet applet)
-	{
-		applet.println("eye: (" + eye_.x + ", " + eye_.y + ", " + eye_.z + ")");
-		applet.println("center: (" + center_.x + ", " + center_.y + ", " + center_.z + ")");
-		applet.println("up: (" + up_.x + ", " + up_.y + ", " + up_.z + ")");
 	}*/
+
+	public float[] getEye() { return eye_; }
+	public float[] getCenter() { return center_; }
+	public float[] getUp() { return up_; }
 
 }

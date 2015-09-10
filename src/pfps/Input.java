@@ -1,21 +1,35 @@
 package pfps;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Input
-{/*
+public class Input implements KeyListener
+{
 	private boolean W_ = false;
 	private boolean A_ = false;
 	private boolean S_ = false;
 	private boolean D_ = false;
 
-	public Input()
+	@Override
+	public void keyTyped(KeyEvent e)
 	{
-		// TODO 자동 생성된 생성자 스텁
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		process(e, true);
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+		process(e, false);
 	}
 	
-	public void process(int keyCode, boolean pressed)
+	private void process(KeyEvent e, boolean pressed)
 	{
-		switch (keyCode)
+		switch (e.getKeyCode())
 		{
 			case 'W':
 				W_ = pressed;
@@ -31,22 +45,13 @@ public class Input
 				break;
 		}
 	}
-
+	
 	public static final int UP = 1 << 0;
 	public static final int DOWN = 1 << 1;
 	public static final int LEFT = 1 << 2;
 	public static final int RIGHT = 1 << 3;
-	public static PVector getDirectionVector(int direction)
-	{
-		return new PVector(
-				(((direction & LEFT) != 0) ? -1 : 0) + (((direction & RIGHT) != 0) ? 1 : 0),
-				0,
-				(((direction & UP) != 0) ? 1 : 0) + (((direction & DOWN) != 0) ? -1 : 0)
-				);
-	}
-
 	public int getDirection()
 	{
 		return (W_ ? UP : 0) | (S_ ? DOWN  : 0) | (A_ ? LEFT : 0) | (D_ ? RIGHT : 0);
-	}*/
+	}
 }

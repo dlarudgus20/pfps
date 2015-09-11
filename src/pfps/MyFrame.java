@@ -2,10 +2,13 @@ package pfps;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -14,28 +17,35 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.FPSAnimator;
 
-public class MyFrame extends JFrame
+public class MyFrame extends JFrame implements GLEventListener
 {
 	private static final long serialVersionUID = 7067036476639086788L;
-	private static final GLU glu = null;
 
 	public static void main(String[] args)
 	{
+		GLProfile.initSingleton();
+
 		EventQueue.invokeLater(() -> {
 			MyFrame f = new MyFrame();
 			f.setVisible(true);
 		});
 	}
 
-	GLProfile glprof_;
-	GLCapabilities glcap_;
-	GLCanvas glcanvas_;
+	private GLProfile glprof_;
+	private GLCapabilities glcap_;
 
-	Camera camera_ = new Camera();
-	Light light_ = new Light();
+	private GLCanvas glcanvas_;
+	private FPSAnimator animator_;
 
-	Input input_ = new Input();
+	private static final int MOVE_TIMER_FREQ = 100;
+	private Timer moveTimer_;
+
+	private Camera camera_ = new Camera();
+	private Light light_ = new Light();
+
+	private Input input_ = new Input();
 
 	public MyFrame()
 	{
@@ -53,44 +63,35 @@ public class MyFrame extends JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		glcanvas_ = new GLCanvas(glcap_);
-		glcanvas_.addGLEventListener(new GLEventListener() {
+		glcanvas_.addGLEventListener(this);
+		this.getContentPane().add(glcanvas_, BorderLayout.CENTER);
+
+		animator_ = new FPSAnimator(glcanvas_, 60);
+		animator_.start();
+
+		moveTimer_ = new Timer(MOVE_TIMER_FREQ, new ActionListener() {
 			@Override
-			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
+			public void actionPerformed(ActionEvent e)
 			{
-				MyFrame.this.reshape(drawable.getGL().getGL2(), width, height);
-			}
-			
-			@Override
-			public void init(GLAutoDrawable drawable)
-			{
-			}
-			
-			@Override
-			public void dispose(GLAutoDrawable drawable)
-			{
-			}
-			
-			@Override
-			public void display(GLAutoDrawable drawable)
-			{
-				MyFrame.this.display(drawable.getGL().getGL2(), drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+				onMoveTimer();
 			}
 		});
-
+		moveTimer_.start();
+		
 		this.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e)
 			{
 				dispose();
 			}
 		});
-		
 		this.addKeyListener(input_);
-
-		this.getContentPane().add(glcanvas_, BorderLayout.CENTER);
 	}
 
-	private void reshape(GL2 gl2, int width, int height)
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
+		GL2 gl2 = drawable.getGL().getGL2();
 		GLU glu = GLU.createGLU();
 
 		gl2.glViewport(0, 0, width, height);
@@ -102,9 +103,21 @@ public class MyFrame extends JFrame
 		gl2.glMatrixMode(GL2.GL_MODELVIEW);
 		gl2.glLoadIdentity();
 	}
-
-	private void display(GL2 gl2, int width, int height)
+	
+	@Override
+	public void init(GLAutoDrawable drawable)
 	{
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable)
+	{
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable)
+	{
+		GL2 gl2 = drawable.getGL().getGL2();
 		GLU glu = GLU.createGLU();
 
 		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -139,16 +152,17 @@ public class MyFrame extends JFrame
 			gl2.glVertex3f(0, 0, -0.75f);
 		}
 		gl2.glEnd();
+	}
 
-		int direction = input_.getDirection();
+	private void onMoveTimer()
+	{
+		/*int direction = input_.getDirection();
 		if (direction != 0)
 		{
 			float dx = ((direction & Input.LEFT) != 0 ? -1 : 0) + ((direction & Input.RIGHT) != 0 ? 1 : 0);
 			float dy = ((direction & Input.UP) != 0 ? -1 : 0) + ((direction & Input.DOWN) != 0 ? 1 : 0);
 			camera_.move(dx, dy, 0);
-		}
-		
-		glcanvas_.invalidate();
+		}*/
 	}
 
 /*	private int smouseX_, smouseY_;

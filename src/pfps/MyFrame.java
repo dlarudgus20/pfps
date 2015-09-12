@@ -1,11 +1,16 @@
 package pfps;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -42,10 +47,10 @@ public class MyFrame extends JFrame implements GLEventListener
 	private static final int MOVE_TIMER_FREQ = 100;
 	private Timer moveTimer_;
 
-	private Camera camera_ = new Camera();
-	private Light light_ = new Light();
+	private Camera camera_;
+	private Light light_;
 
-	private Input input_ = new Input();
+	private Input input_;
 
 	public MyFrame()
 	{
@@ -80,28 +85,37 @@ public class MyFrame extends JFrame implements GLEventListener
 		
 		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent e)
+			public void windowOpened(WindowEvent e)
 			{
-				dispose();
+				MyFrame.this.windowOpened(e);
 			}
 		});
 		this.addKeyListener(input_);
+		this.addMouseMotionListener(input_);
+	}
+
+	private void windowOpened(WindowEvent e)
+	{
+		camera_ = new Camera();
+		light_ = new Light();
+
+		try
+		{
+			input_ = new Input(this);
+		}
+		catch (AWTException e)
+		{
+			
+		}
+
+		hideMouseCursor();
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
 		GL2 gl2 = drawable.getGL().getGL2();
-		GLU glu = GLU.createGLU();
-
 		gl2.glViewport(0, 0, width, height);
-
-		gl2.glMatrixMode(GL2.GL_PROJECTION);
-		gl2.glLoadIdentity();
-		glu.gluPerspective(60, width / height, 0.1f, 100);
-		
-		gl2.glMatrixMode(GL2.GL_MODELVIEW);
-		gl2.glLoadIdentity();
 	}
 	
 	@Override
@@ -122,7 +136,14 @@ public class MyFrame extends JFrame implements GLEventListener
 
 		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl2.glEnable(GL2.GL_DEPTH_TEST);
+
+		gl2.glMatrixMode(GL2.GL_PROJECTION);
+		gl2.glLoadIdentity();
+		glu.gluPerspective(60, drawable.getSurfaceWidth() /drawable.getSurfaceHeight(), 0.1f, 100);
 		
+		gl2.glMatrixMode(GL2.GL_MODELVIEW);
+		gl2.glLoadIdentity();
+
 		camera_.apply(gl2, glu);
 		//light_.apply(gl2);
 
@@ -156,13 +177,22 @@ public class MyFrame extends JFrame implements GLEventListener
 
 	private void onMoveTimer()
 	{
-		/*int direction = input_.getDirection();
+		int direction = input_.getDirection();
 		if (direction != 0)
 		{
 			float dx = ((direction & Input.LEFT) != 0 ? -1 : 0) + ((direction & Input.RIGHT) != 0 ? 1 : 0);
-			float dy = ((direction & Input.UP) != 0 ? -1 : 0) + ((direction & Input.DOWN) != 0 ? 1 : 0);
-			camera_.move(dx, dy, 0);
-		}*/
+			float dz = ((direction & Input.UP) != 0 ? -1 : 0) + ((direction & Input.DOWN) != 0 ? 1 : 0);
+			camera_.move(dx, 0, dz);
+		}
+	}
+
+	private void hideMouseCursor()
+	{
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Point hotSpot = new Point(0, 0);
+		BufferedImage cursorImage = new BufferedImage(1, 1, BufferedImage.TRANSLUCENT);
+		Cursor invisibleCursor = toolkit.createCustomCursor(cursorImage, hotSpot, "invisibleCursor");
+		setCursor(invisibleCursor);
 	}
 
 /*	private int smouseX_, smouseY_;

@@ -75,4 +75,10 @@ public class Camera
 	public float[] getCenter() { return center_; }
 	public float[] getUp() { return up_; }
 
+	public void print()
+	{
+		System.out.println("eye:    (" + eye_[0] + ", " + eye_[1] + ", " + eye_[2] + ")");
+		System.out.println("center: (" + center_[0] + ", " + center_[1] + ", " + center_[2] + ")");
+		System.out.println("up:     (" + up_[0] + ", " + up_[1] + ", " + up_[2] + ")");
+	}
 }

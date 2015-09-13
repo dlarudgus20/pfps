@@ -5,80 +5,106 @@ import com.jogamp.opengl.glu.GLU;
 
 public class Camera
 {
-	// camera
-	private float[] eye_ = { 0, 0, 10 };
-	private float[] center_ = { 0, 0, 0 };
-	private float[] up_ = { 0, 1, 0 };
+	private static final float MAX_ANGLE_X = 60;
+	private static final float MAX_ANGLE_Y = 60;
 
-	public Camera()
-	{
-		// TODO 자동 생성된 생성자 스텁
-	}
+	private float distance_ = 10;
+	private float[] pos_ = { 0, 0, distance_ };
+	private float mouseAngleX_ = 0;
+	private float mouseAngleY_ = 0;
 	
 	public void apply(GL2 gl2, GLU glu)
 	{
-		glu.gluLookAt(eye_[0], eye_[1], eye_[2],
-				center_[0], center_[1], center_[2],
-				up_[0], up_[1], up_[2]);
+		float angleX = (float)Math.toRadians(mouseAngleX_);
+		float angleY = (float)Math.toRadians(mouseAngleY_);
+
+		// center는 방향을 계산 후 pos_를 더해줌
+		float[] center = new float[] { 0, 0, -distance_ };
+		float[] up = new float[] { 0, 1, 0 };
+
+		// angleX는 Y축으로, angelY는 X축으로 회전해야 함.
+		rotateY(center, -angleX);
+		rotateY(up, -angleX);
+		rotateX(center, -angleY);
+		rotateX(up, -angleY);
+
+		// center = eye + direction
+		addVector(center, pos_);
+
+		glu.gluLookAt(pos_[0], pos_[1], pos_[2],
+				center[0], center[1], center[2],
+				up[0], up[1], up[2]);
+
+		gl2.glRotatef(mouseAngleX_, 0, -1, 0);
+		gl2.glRotatef(mouseAngleY_, 1, 0, 0);
 	}
 
 	public void move(float dx, float dy, float dz)
 	{
-		eye_[0] += dx; eye_[1] += dy; eye_[2] += dz;
-		center_[0] += dx; center_[1] += dy; center_[2] += dz;
+		pos_[0] += dx;
+		pos_[1] += dy;
+		pos_[2] += dz;
+		/*
+		float angleX = (float)Math.toRadians(mouseAngleX_);
+		float angleY = (float)Math.toRadians(mouseAngleY_);
+
+		float[] dv = new float[] { dx, dy, dz };
+		// apply 주석 참고
+		rotateY(dv, -angleX);
+		rotateX(dv, -angleY);
+
+		addVector(pos_, dv);
+		*/
 	}
 
-	/*public void rotateX(float angle)
+	public void rotateByMouse(float angleX, float angleY)
 	{
-		PVector axis = PVector.mult(up_, -1);
-
-		PMatrix3D mat = new PMatrix3D(
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1);
-		mat.rotate(angle, axis.x, axis.y, axis.z);
-		
-		PVector tmp = new PVector();
-		tmp.set(center_);
-		tmp.sub(eye_);
-		tmp = mat.mult(tmp, null);
-		tmp.add(eye_);
-		center_ = tmp;
-
-		up_ = mat.mult(up_, null);
+		mouseAngleX_ = range(-MAX_ANGLE_X, mouseAngleX_ + angleX, MAX_ANGLE_X);
+		mouseAngleY_ = range(-MAX_ANGLE_Y, mouseAngleY_ + angleY, MAX_ANGLE_Y);
 	}
 
-	public void rotateY(float angle)
+	private static float range(float min, float val, float max)
 	{
-		PVector axis = new PVector(up_.z, up_.z, -(up_.x + up_.y));
-		axis.normalize();
+		if (val < min)
+			return min;
+		else if (max < val)
+			return max;
+		else
+			return val;
+	}
 
-		PMatrix3D mat = new PMatrix3D(
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1);
-		mat.rotate(angle, axis.x, axis.y, axis.z);
-		
-		PVector tmp = new PVector();
-		tmp.set(center_);
-		tmp.sub(eye_);
-		tmp = mat.mult(tmp, null);
-		tmp.add(eye_);
-		center_ = tmp;
-
-		up_ = mat.mult(up_, null);
-	}*/
-
-	public float[] getEye() { return eye_; }
-	public float[] getCenter() { return center_; }
-	public float[] getUp() { return up_; }
-
-	public void print()
+	private static void rotateX(float[] vec, float angle)
 	{
-		System.out.println("eye:    (" + eye_[0] + ", " + eye_[1] + ", " + eye_[2] + ")");
-		System.out.println("center: (" + center_[0] + ", " + center_[1] + ", " + center_[2] + ")");
-		System.out.println("up:     (" + up_[0] + ", " + up_[1] + ", " + up_[2] + ")");
+		final float c = (float)Math.cos(angle);
+		final float s = (float)Math.sin(angle);
+		float x = vec[0];
+		float y = c * vec[1] - s * vec[2];
+		float z = s * vec[1] + c * vec[2];
+		vec[0] = x; vec[1] = y; vec[2] = z;
+	}
+	private static void rotateY(float[] vec, float angle)
+	{
+		final float c = (float)Math.cos(angle);
+		final float s = (float)Math.sin(angle);
+		float x = c * vec[0] + s * vec[2];
+		float y = vec[1];
+		float z = -s * vec[0] + c * vec[2];
+		vec[0] = x; vec[1] = y; vec[2] = z;
+	}
+	private static void rotateZ(float[] vec, float angle)
+	{
+		final float c = (float)Math.cos(angle);
+		final float s = (float)Math.sin(angle);
+		float x = c * vec[0] - s * vec[1];
+		float y = s * vec[0] + c * vec[1];
+		float z = vec[2];
+		vec[0] = x; vec[1] = y; vec[2] = z;
+	}
+
+	private static void addVector(float[] vec1, float[] vec2)
+	{
+		vec1[0] += vec2[0];
+		vec1[1] += vec2[1];
+		vec1[2] += vec2[2];
 	}
 }

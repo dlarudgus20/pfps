@@ -1,15 +1,11 @@
 package pfps;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
 
 public class Light
 {
-
-	public Light()
-	{
-		// TODO 자동 생성된 생성자 스텁
-	}
-
-	public void apply()
+	public void apply(GL2 gl2, GLU glu)
 	{
 		/*g.lightFalloff(0.8f, 0.1f, 0.1f);
 		g.ambientLight(64, 64, 64);

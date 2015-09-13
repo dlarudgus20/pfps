@@ -1,7 +1,6 @@
 package pfps;
 
-import java.awt.AWTException;
-import java.awt.Robot;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -9,19 +8,19 @@ import java.awt.event.MouseMotionListener;
 
 public class Input implements KeyListener, MouseMotionListener
 {
-	private Robot robot_;
+	private MyFrame frame_;
 
 	private boolean W_ = false;
 	private boolean A_ = false;
 	private boolean S_ = false;
 	private boolean D_ = false;
 
-	private int prevMouseX_ = 0, prevMouseY_ = 0;
-
-	public Input(MyFrame frame) throws AWTException
+	public void init(MyFrame frame)
 	{
-		// initialize mouse coordinate
-		robot_ = new Robot();
+		frame_ = frame;
+
+		Point pt = getCenter();
+		frame_.getRobot().mouseMove(pt.x, pt.y);
 	}
 
 	@Override
@@ -32,25 +31,29 @@ public class Input implements KeyListener, MouseMotionListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		processKey(e, true);
+		if (frame_ != null)
+			processKey(e, true);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
+		if (frame_ != null)
 		processKey(e, false);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		processMouseMove(e);
+		if (frame_ != null && frame_.getFocusOwner() != null)
+			processMouseMove(e);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
-		processMouseMove(e);
+		if (frame_ != null && frame_.getFocusOwner() != null)
+			processMouseMove(e);
 	}
 	
 	private void processKey(KeyEvent e, boolean pressed)
@@ -74,9 +77,33 @@ public class Input implements KeyListener, MouseMotionListener
 
 	private void processMouseMove(MouseEvent e)
 	{
-		
+		final float magnify = 30;
+
+		Point ptCenter = getCenter();
+		Point ptMouse = e.getLocationOnScreen();
+
+		int dx = ptMouse.x - ptCenter.x;
+		int dy = ptMouse.y - ptCenter.y;
+
+		int width = frame_.getRenderCanvas().getWidth();
+		int height = frame_.getRenderCanvas().getHeight();
+
+		float angleX = (dx / (width / 2.f)) * magnify;
+		float angleY = (dy / (height / 2.f)) * magnify;
+
+		frame_.rotateByMouse(angleX, angleY);
+
+		frame_.getRobot().mouseMove(ptCenter.x, ptCenter.y);
 	}
-	
+
+	private Point getCenter()
+	{
+		Point pt = frame_.getRenderCanvas().getLocationOnScreen();
+		pt.x += frame_.getRenderCanvas().getWidth() / 2;
+		pt.y += frame_.getRenderCanvas().getHeight() / 2;
+		return pt;
+	}
+
 	public static final int UP = 1 << 0;
 	public static final int DOWN = 1 << 1;
 	public static final int LEFT = 1 << 2;

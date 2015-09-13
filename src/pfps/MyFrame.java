@@ -167,7 +167,7 @@ public class MyFrame extends JFrame implements GLEventListener
 		camera_.apply(gl2, glu);
 		light_.apply(gl2, glu);
 
-		//gl2.glRotatef(angle__, 0, 1 ,0);
+		gl2.glRotatef(angle__, 0, 1 ,0);
 		angle__ += 1;
 
 		gl2.glMatrixMode(GL2.GL_MODELVIEW);

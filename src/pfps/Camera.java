@@ -41,12 +41,12 @@ public class Camera
 
 	public void move(float dx, float dy, float dz)
 	{
-		///*
+		/*
 		pos_[0] += dx;
 		pos_[1] += dy;
 		pos_[2] += dz;
 		//*/
-		/*
+		///*
 		float angleX = (float)Math.toRadians(mouseAngleX_);
 		float angleY = (float)Math.toRadians(mouseAngleY_);
 

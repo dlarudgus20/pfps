@@ -9,11 +9,10 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-
+import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -26,6 +25,10 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.owens.oobjloader.builder.Build;
+import com.owens.oobjloader.builder.Face;
+import com.owens.oobjloader.builder.FaceVertex;
+import com.owens.oobjloader.parser.Parse;
 
 public class MyFrame extends JFrame implements GLEventListener
 {
@@ -140,6 +143,16 @@ public class MyFrame extends JFrame implements GLEventListener
 	@Override
 	public void init(GLAutoDrawable drawable)
 	{
+		try
+		{
+			glock3__ = new Build();
+			new Parse(glock3__, "res/glock3.obj");
+		}
+		catch (IOException e)
+		{
+			System.out.println("ㅇㄴ");
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -147,6 +160,7 @@ public class MyFrame extends JFrame implements GLEventListener
 	{
 	}
 
+	private Build glock3__;
 	private float angle__ = 0;
 	@Override
 	public void display(GLAutoDrawable drawable)
@@ -156,6 +170,7 @@ public class MyFrame extends JFrame implements GLEventListener
 
 		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl2.glEnable(GL2.GL_DEPTH_TEST);
+		gl2.glDisable(GL2.GL_CULL_FACE);
 
 		gl2.glMatrixMode(GL2.GL_PROJECTION);
 		gl2.glLoadIdentity();
@@ -167,11 +182,9 @@ public class MyFrame extends JFrame implements GLEventListener
 		camera_.apply(gl2, glu);
 		light_.apply(gl2, glu);
 
+		gl2.glPushMatrix();
 		gl2.glRotatef(angle__, 0, 1 ,0);
 		angle__ += 1;
-
-		gl2.glMatrixMode(GL2.GL_MODELVIEW);
-
 		gl2.glBegin(GL2.GL_TRIANGLES);
 		{
 			gl2.glColor3f(1, 1, 1);
@@ -215,6 +228,23 @@ public class MyFrame extends JFrame implements GLEventListener
 			gl2.glVertex3f(0, 0,  -0.75f);
 		}
 		gl2.glEnd();
+		gl2.glPopMatrix();
+
+		gl2.glPushMatrix();
+		gl2.glTranslatef(0.33f, -0.8f, 5);
+		gl2.glScalef(0.05f, 0.05f, 0.05f);
+		for (Face face : glock3__.faces)
+		{
+			gl2.glBegin(GL2.GL_TRIANGLE_FAN);
+			for (FaceVertex vertex : face.vertices)
+			{
+				gl2.glColor3f(1, 1, 1);
+				gl2.glNormal3f(vertex.n.x, vertex.n.y, vertex.n.z);
+				gl2.glVertex3f(vertex.v.x, vertex.v.y, vertex.v.z);
+			}
+			gl2.glEnd();
+		}
+		gl2.glPopMatrix();
 	}
 
 	public void rotateByMouse(float angleX, float angleY)

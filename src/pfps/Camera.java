@@ -9,7 +9,7 @@ public class Camera
 	private static final float MAX_ANGLE_Y = 45;
 
 	private float distance_ = 10;
-	private float[] pos_ = { 0, 0, distance_ };
+	private float[] pos_ = { 0, -distance_, 4 };
 	private float mouseAngleX_ = 0;
 	private float mouseAngleY_ = 0;
 	
@@ -18,13 +18,33 @@ public class Camera
 		float angleX = (float)Math.toRadians(mouseAngleX_);
 		float angleY = (float)Math.toRadians(mouseAngleY_);
 
-		// center는 방향을 계산 후 pos_를 더해줌
-		float[] center = new float[] { 0, 0, -distance_ };
-		float[] up = new float[] { 0, 1, 0 };
+		/*float[] e1 = new float[] { 0, 1, 0 };
+		float[] e2 = new float[] { 0, 1, 0 };
+		float[] center;
+		Utility.rotateZ(e1, -angleX);
+		Utility.rotateX(e2, -angleY);
+		Utility.addVector(e2, e1);
+		Utility.normalize(e2);
+		center = e2;
+		Utility.multVector(center, distance_);
+		Utility.addVector(center, pos_);
 
-		// angleX는 Y축으로, angelY는 X축으로 회전해야 함.
-		Utility.rotateY(center, -angleX);
-		Utility.rotateY(up, -angleX);
+		e1 = new float[] { 0, 0, 1 };
+		e2 = new float[] { 0, 0, 1 };
+		float[] up;
+		Utility.rotateZ(e1, -angleX);
+		Utility.rotateX(e2, -angleY);
+		Utility.addVector(e2, e1);
+		Utility.normalize(e2);
+		up = e2;
+		Utility.addVector(up, pos_);*/
+		
+		// center는 방향을 계산 후 pos_를 더해줌
+		float[] center = new float[] { 0, distance_, 0 };
+		float[] up = new float[] { 0, 0, 1 };
+		
+		Utility.rotateZ(center, -angleX);
+		Utility.rotateZ(up, -angleX);
 		Utility.rotateX(center, -angleY);
 		Utility.rotateX(up, -angleY);
 
@@ -45,11 +65,8 @@ public class Camera
 		//*/
 		///*
 		float angleX = (float)Math.toRadians(mouseAngleX_);
-		float angleY = (float)Math.toRadians(mouseAngleY_);
-
 		float[] dv = new float[] { dx, dy, dz };
-		// apply 주석 참고
-		Utility.rotateY(dv, -angleX);
+		Utility.rotateZ(dv, -angleX);
 
 		Utility.addVector(pos_, dv);
 		//*/

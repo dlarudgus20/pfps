@@ -50,4 +50,22 @@ public final class Utility
 		vec1[1] += vec2[1];
 		vec1[2] += vec2[2];
 	}
+
+	public static void multVector(float[] vec, float a)
+	{
+		vec[0] *= a;
+		vec[1] *= a;
+		vec[2] *= a;
+	}
+
+	public static float length(float[] vec)
+	{
+		return (float)Math.sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+	}
+
+	public static void normalize(float[] vec)
+	{
+		float a = 1.f / length(vec);
+		multVector(vec, a);
+	}
 }

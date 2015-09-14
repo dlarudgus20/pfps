@@ -182,60 +182,80 @@ public class MyFrame extends JFrame implements GLEventListener
 		camera_.apply(gl2, glu);
 		light_.apply(gl2, glu);
 
+		Runnable triangle = () -> {
+			gl2.glBegin(GL2.GL_TRIANGLES);
+			{
+				gl2.glColor3f(1, 1, 1);
+				gl2.glNormal3f(0, 0, 1);
+				gl2.glVertex3f(0, 1, 0);
+				gl2.glColor3f(1, 0, 0);
+				gl2.glNormal3f(0, 0, 1);
+				gl2.glVertex3f(-0.87f, -0.5f, 0);
+				gl2.glColor3f(0, 0, 1);
+				gl2.glNormal3f(0, 0, 1);
+				gl2.glVertex3f(0.87f, -0.5f, 0);
+
+				gl2.glColor3f(1, 1, 1);
+				gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
+				gl2.glVertex3f(0, 1, 0);
+				gl2.glColor3f(0, 0, 1);
+				gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
+				gl2.glVertex3f(0.87f, -0.5f, 0);
+				gl2.glColor3f(0, 1, 0);
+				gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
+				gl2.glVertex3f(0, 0, -0.75f);
+
+				gl2.glColor3f(1, 0, 0);
+				gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
+				gl2.glVertex3f(-0.87f, -0.5f, 0);
+				gl2.glColor3f(1, 1, 1);
+				gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
+				gl2.glVertex3f(0, 1, 0);
+				gl2.glColor3f(0, 1, 0);
+				gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
+				gl2.glVertex3f(0, 0, -0.75f);
+
+				gl2.glColor3f(0, 0, 1);
+				gl2.glNormal3f(0, -1.305f, -0.87f);
+				gl2.glVertex3f(0.87f, -0.5f, 0);
+				gl2.glColor3f(1, 0, 0);
+				gl2.glNormal3f(0, -1.305f, -0.87f);
+				gl2.glVertex3f(-0.87f, -0.5f, 0);
+				gl2.glColor3f(0, 1, 0);
+				gl2.glNormal3f(0, -1.305f, -0.87f);
+				gl2.glVertex3f(0, 0,  -0.75f);
+			}
+			gl2.glEnd();
+		};
+
 		gl2.glPushMatrix();
-		gl2.glRotatef(angle__, 0, 1 ,0);
-		angle__ += 1;
-		gl2.glBegin(GL2.GL_TRIANGLES);
 		{
-			gl2.glColor3f(1, 1, 1);
-			gl2.glNormal3f(0, 0, 1);
-			gl2.glVertex3f(0, 1, 0);
-			gl2.glColor3f(1, 0, 0);
-			gl2.glNormal3f(0, 0, 1);
-			gl2.glVertex3f(-0.87f, -0.5f, 0);
-			gl2.glColor3f(0, 0, 1);
-			gl2.glNormal3f(0, 0, 1);
-			gl2.glVertex3f(0.87f, -0.5f, 0);
+			gl2.glPushMatrix();
+			gl2.glRotatef(angle__, 0, 1 ,0);
+			triangle.run();
+			gl2.glPopMatrix();
 
-			gl2.glColor3f(1, 1, 1);
-			gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
-			gl2.glVertex3f(0, 1, 0);
-			gl2.glColor3f(0, 0, 1);
-			gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
-			gl2.glVertex3f(0.87f, -0.5f, 0);
-			gl2.glColor3f(0, 1, 0);
-			gl2.glNormal3f(0.71898836f, 0.4170133f, -0.5560177f);
-			gl2.glVertex3f(0, 0, -0.75f);
+			gl2.glPushMatrix();
+			gl2.glTranslatef(-3.2f, 0, 0);
+			gl2.glRotatef(angle__, 0, 1 ,0);
+			triangle.run();
+			gl2.glPopMatrix();
 
-			gl2.glColor3f(1, 0, 0);
-			gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
-			gl2.glVertex3f(-0.87f, -0.5f, 0);
-			gl2.glColor3f(1, 1, 1);
-			gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
-			gl2.glVertex3f(0, 1, 0);
-			gl2.glColor3f(0, 1, 0);
-			gl2.glNormal3f(-0.7189883f, 0.41701326f, -0.5560177f);
-			gl2.glVertex3f(0, 0, -0.75f);
-
-			gl2.glColor3f(0, 0, 1);
-			gl2.glNormal3f(0, -1.305f, -0.87f);
-			gl2.glVertex3f(0.87f, -0.5f, 0);
-			gl2.glColor3f(1, 0, 0);
-			gl2.glNormal3f(0, -1.305f, -0.87f);
-			gl2.glVertex3f(-0.87f, -0.5f, 0);
-			gl2.glColor3f(0, 1, 0);
-			gl2.glNormal3f(0, -1.305f, -0.87f);
-			gl2.glVertex3f(0, 0,  -0.75f);
+			gl2.glPushMatrix();
+			gl2.glTranslatef(3.2f, 0, 0);
+			gl2.glRotatef(angle__, 0, 1 ,0);
+			triangle.run();
+			gl2.glPopMatrix();
 		}
-		gl2.glEnd();
 		gl2.glPopMatrix();
+		angle__ += 1;
 
 		gl2.glPushMatrix();
-		gl2.glTranslatef(0.33f, -0.8f, 5);
+		gl2.glTranslatef(0.05f, -1.5f, 5);
 		gl2.glScalef(0.05f, 0.05f, 0.05f);
 		for (Face face : glock3__.faces)
 		{
-			gl2.glBegin(GL2.GL_TRIANGLE_FAN);
+			gl2.glBegin(GL2.GL_POLYGON);
 			for (FaceVertex vertex : face.vertices)
 			{
 				gl2.glColor3f(1, 1, 1);
@@ -254,7 +274,7 @@ public class MyFrame extends JFrame implements GLEventListener
 
 	private void onMoveTimer()
 	{
-		final float UNIT = 0.17f;
+		final float UNIT = 0.08f;
 		int direction = input_.getDirection();
 		if (direction != 0)
 		{

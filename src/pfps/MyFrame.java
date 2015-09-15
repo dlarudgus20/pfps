@@ -62,6 +62,9 @@ public class MyFrame extends JFrame implements GLEventListener
 
 	private Input input_;
 
+	private long deltaTime;
+	private long lastFrame;
+
 	public MyFrame()
 	{
 		glprof_ = GLProfile.getDefault();
@@ -237,19 +240,19 @@ public class MyFrame extends JFrame implements GLEventListener
 		gl2.glPushMatrix();
 		{
 			gl2.glPushMatrix();
-			gl2.glTranslatef(0, 0, 4);
+			gl2.glTranslatef(0, 0, 0);
 			gl2.glRotatef(angle__, 0, 1 ,0);
 			triangle.run();
 			gl2.glPopMatrix();
 
 			gl2.glPushMatrix();
-			gl2.glTranslatef(0, 3.2f, 4);
+			gl2.glTranslatef(0, 3.2f, 0);
 			gl2.glRotatef(angle__+ 30, 0, 1 ,0);
 			triangle.run();
 			gl2.glPopMatrix();
 
 			gl2.glPushMatrix();
-			gl2.glTranslatef(3.2f, 0, 4);
+			gl2.glTranslatef(3.2f, 0, 0);
 			gl2.glRotatef(angle__ + 60, 0, 1 ,0);
 			triangle.run();
 			gl2.glPopMatrix();
@@ -258,8 +261,7 @@ public class MyFrame extends JFrame implements GLEventListener
 		angle__ += 1;
 
 		gl2.glPushMatrix();
-		//gl2.glTranslatef(0.05f, -1.5f, 5);
-		
+		gl2.glTranslatef(0.05f, -1.5f, 5);
 		gl2.glScalef(0.05f, 0.05f, 0.05f);
 		for (Face face : glock3__.faces)
 		{
@@ -287,8 +289,8 @@ public class MyFrame extends JFrame implements GLEventListener
 		if (direction != 0)
 		{
 			float dx = ((direction & Input.LEFT) != 0 ? -UNIT : 0) + ((direction & Input.RIGHT) != 0 ? UNIT : 0);
-			float dy = ((direction & Input.UP) != 0 ? UNIT : 0) + ((direction & Input.DOWN) != 0 ? -UNIT : 0);
-			camera_.move(dx, dy, 0);
+			float dz = ((direction & Input.UP) != 0 ? -UNIT : 0) + ((direction & Input.DOWN) != 0 ? UNIT : 0);
+			camera_.move(dx, 0, dz);
 		}
 	}
 

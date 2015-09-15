@@ -68,4 +68,17 @@ public final class Utility
 		float a = 1.f / length(vec);
 		multVector(vec, a);
 	}
+
+	public static float[] cross(float[] v1, float[] v2)
+	{
+		float[] out = new float[3];
+		cross(v1, v2, out);
+		return out;
+	}
+	public static void cross(float[] v1, float[] v2, float[] out)
+	{
+		out[0] = v1[1]*v2[2] - v1[2]*v2[1];
+		out[1] = v1[2]*v2[0] - v1[0]*v2[2];
+		out[2] = v1[0]*v2[1] - v1[1]*v2[0];
+	}
 }

@@ -9,51 +9,25 @@ public class Camera
 	private static final float MAX_ANGLE_Y = 45;
 
 	private float distance_ = 10;
-	private float[] pos_ = { 0, -distance_, 4 };
+	private float[] pos_ = { 0, 0, distance_ };
 	private float mouseAngleX_ = 0;
 	private float mouseAngleY_ = 0;
-	
+
+	// calculated vectors by calculate()
+	private float[] front_ = new float[3];
+	private float[] right_ = new float[3];
+	private float[] up_ = new float[3];
+
+	public Camera()
+	{
+		calculate();
+	}
+
 	public void apply(GL2 gl2, GLU glu)
 	{
-		float angleX = (float)Math.toRadians(mouseAngleX_);
-		float angleY = (float)Math.toRadians(mouseAngleY_);
-
-		/*float[] e1 = new float[] { 0, 1, 0 };
-		float[] e2 = new float[] { 0, 1, 0 };
-		float[] center;
-		Utility.rotateZ(e1, -angleX);
-		Utility.rotateX(e2, -angleY);
-		Utility.addVector(e2, e1);
-		Utility.normalize(e2);
-		center = e2;
-		Utility.multVector(center, distance_);
-		Utility.addVector(center, pos_);
-
-		e1 = new float[] { 0, 0, 1 };
-		e2 = new float[] { 0, 0, 1 };
-		float[] up;
-		Utility.rotateZ(e1, -angleX);
-		Utility.rotateX(e2, -angleY);
-		Utility.addVector(e2, e1);
-		Utility.normalize(e2);
-		up = e2;
-		Utility.addVector(up, pos_);*/
-		
-		// center는 방향을 계산 후 pos_를 더해줌
-		float[] center = new float[] { 0, distance_, 0 };
-		float[] up = new float[] { 0, 0, 1 };
-		
-		Utility.rotateZ(center, -angleX);
-		Utility.rotateZ(up, -angleX);
-		Utility.rotateX(center, -angleY);
-		Utility.rotateX(up, -angleY);
-
-		// center = eye + direction
-		Utility.addVector(center, pos_);
-
 		glu.gluLookAt(pos_[0], pos_[1], pos_[2],
-				center[0], center[1], center[2],
-				up[0], up[1], up[2]);
+				pos_[0] + front_[0], pos_[1] + front_[1], pos_[2] + front_[2],
+				up_[0], up_[1], up_[2]);
 	}
 
 	public void move(float dx, float dy, float dz)
@@ -64,17 +38,35 @@ public class Camera
 		pos_[2] += dz;
 		//*/
 		///*
-		float angleX = (float)Math.toRadians(mouseAngleX_);
 		float[] dv = new float[] { dx, dy, dz };
-		Utility.rotateZ(dv, -angleX);
+		Utility.rotateY(dv, -mouseAngleX_);
 
 		Utility.addVector(pos_, dv);
 		//*/
+
+		calculate();
 	}
 
 	public void rotateByMouse(float angleX, float angleY)
 	{
 		mouseAngleX_ = Utility.range(-MAX_ANGLE_X, mouseAngleX_ + angleX, MAX_ANGLE_X);
 		mouseAngleY_ = Utility.range(-MAX_ANGLE_Y, mouseAngleY_ + angleY, MAX_ANGLE_Y);
+		calculate();
+	}
+
+	private void calculate()
+	{
+		// ref: http://www.learnopengl.com/#!Getting-started/Camera
+		// warning: direction cannot be parallel with (0,1,0)
+		
+		front_[0] = distance_ * (float)(Math.cos(-mouseAngleY_) * Math.cos(mouseAngleX_ - Math.PI / 2));
+		front_[1] = distance_ * (float)(Math.sin(-mouseAngleY_));
+		front_[2] = distance_ * (float)(Math.cos(-mouseAngleY_) * Math.sin(mouseAngleX_ - Math.PI / 2));
+
+		Utility.cross(front_, new float[] { 0, 1, 0 }, right_);
+		Utility.normalize(front_);
+
+		Utility.cross(right_, front_, up_);
+		Utility.normalize(up_);
 	}
 }

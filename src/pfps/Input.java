@@ -77,7 +77,7 @@ public class Input implements KeyListener, MouseMotionListener
 
 	private void processMouseMove(MouseEvent e)
 	{
-		final float magnify = 30;
+		final float magnify = (float)Math.PI / 6;
 
 		Point ptCenter = getCenter();
 		Point ptMouse = e.getLocationOnScreen();
